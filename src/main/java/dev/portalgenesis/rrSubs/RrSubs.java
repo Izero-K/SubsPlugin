@@ -24,7 +24,7 @@ public class RrSubs extends JavaPlugin {
         };
 
         autosaveTask.runTaskTimerAsynchronously(this, interval * 20L, interval * 20L);
-        new RRSubsCommand(subscriptionManager, configManager, this); // регистрация команд
+        new RRSubsCommand(subscriptionManager, configManager, this);
     }
 
     @Override

@@ -1,16 +1,18 @@
 package dev.portalgenesis.rrSubs;
 
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
-import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.util.stream.Collectors;
+
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class RRSubsCommand {
 
@@ -53,8 +55,8 @@ public class RRSubsCommand {
                 .withArguments(new StringArgument("type")
                         .replaceSuggestions(ArgumentSuggestions.strings(subscriptionTypeNames)))
                 .executes((sender, args) -> {
-                    Player target = (Player) args.get("player");
-                    String inputType = (String) args.get("type");
+                    Player target = (Player) Objects.requireNonNull(args.get("player"));
+                    String inputType = (String) Objects.requireNonNull(args.get("type"));
 
                     SubscriptionType type;
                     try {
@@ -68,13 +70,13 @@ public class RRSubsCommand {
                     sendMessage(sender, "subscription_set",  type.getDisplayName(), target.getName());
 
                 });
-    }//a
+    }
 
     private CommandAPICommand createSeeCommand() {
         return new CommandAPICommand("see")
                 .withArguments(new PlayerArgument("player"))
                 .executes((sender, args) -> {
-                    Player target = (Player) args.get("player");
+                    Player target = (Player) Objects.requireNonNull(args.get("player"));
                     SubscriptionType type = subscriptionManager.getSubscription(target.getName());
                     sendMessage(sender, "subscription_info", target.getName(), type.getDisplayName());
                 });

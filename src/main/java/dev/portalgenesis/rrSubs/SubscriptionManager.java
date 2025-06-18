@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SubscriptionManager {
@@ -38,55 +38,39 @@ public class SubscriptionManager {
         load();
     }
 
-    /**
-     * Устанавливает подписку по нику игрока
-     */
     public void setSubscription(String playerName, SubscriptionType type) {
         subscriptions.put(playerName.toLowerCase(), type); // Сохраняем в нижнем регистре
         save();
 
         Player player = Bukkit.getPlayer(playerName);
         if (player != null) {
-            player.sendMessage("§aВаша подписка обновлена: " + type.getDisplayName());
+            player.sendMessage(cfg.getMessage("sub_changed_notify", type.getDisplayName()));
         }
     }
 
-    /**
-     * Получает подписку по нику
-     */
     public SubscriptionType getSubscription(String playerName) {
         return subscriptions.getOrDefault(playerName.toLowerCase(), SubscriptionType.NONE);
     }
 
-    /**
-     * Проверяет подписку для онлайн-игрока
-     */
     public boolean hasSubscription(Player player, SubscriptionType type) {
         return type.equals(getSubscription(player.getName()));
     }
 
-    /**
-     * Удаляет подписку
-     */
     public void removeSubscription(String playerName) {
         subscriptions.remove(playerName.toLowerCase());
         save();
     }
 
-    /**
-     * Получает все подписки (ник → тип)
-     */
     public Map<String, SubscriptionType> getAllSubscriptions() {
         return Map.copyOf(subscriptions);
     }
 
-    // Сохранение и загрузка (аналогично, но для Map<String, SubscriptionType>)
     public void save() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try (Writer writer = new FileWriter(dataFile)) {
                 gson.toJson(subscriptions, writer);
             } catch (IOException e) {
-                plugin.getLogger().severe("Ошибка сохранения подписок: " + e.getMessage());
+                logger.error("Failed to save subscriptions", e);
             }
         });
     }
@@ -95,17 +79,16 @@ public class SubscriptionManager {
         if (!dataFile.exists()) return;
 
         try (Reader reader = new FileReader(dataFile)) {
-            Type type = new TypeToken<Map<String, SubscriptionType>>() {}.getType();
+            Type type = new TypeToken<Map<String, SubscriptionType>>() {
+            }.getType();
             Map<String, SubscriptionType> loaded = gson.fromJson(reader, type);
 
             if (loaded != null) {
                 subscriptions.clear();
-                loaded.forEach((name, sub) ->
-                        subscriptions.put(name.toLowerCase(), sub)
-                );
+                loaded.forEach((name, sub) -> subscriptions.put(name.toLowerCase(), sub));
             }
         } catch (IOException e) {
-            plugin.getLogger().severe("Ошибка загрузки подписок: " + e.getMessage());
+            logger.error("Failed to load subscriptions", e);
         }
     }
 }
