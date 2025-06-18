@@ -1,5 +1,7 @@
 package dev.portalgenesis.rrSubs;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,8 +19,21 @@ public class ConfigManager {
         return config.getInt("autosave_interval", 20); // по умолчанию 20 секунд
     }
 
-    public String getMessage(String key) {
-        return config.getString("messages." + key, "§c[!] Сообщение не найдено: " + key);
+    private static final LegacyComponentSerializer MESSAGE_PARSER = LegacyComponentSerializer.builder()
+            .extractUrls()
+            .character('&')
+            .hexColors()
+            .build();
+
+
+    public Component getMessage(String key, Object... args) {
+        var raw = config.getString(key, key);
+        int i = 0;
+        for (var arg : args) {
+            raw = raw.replace("%"+i, String.valueOf(arg));
+            i++;
+        }
+        return MESSAGE_PARSER.deserialize(raw);
     }
 
     public void reload() {
