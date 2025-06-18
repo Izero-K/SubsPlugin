@@ -13,7 +13,7 @@ public class RrSubs extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         configManager = new ConfigManager(this);
-        subscriptionManager = new SubscriptionManager(this);
+        subscriptionManager = new SubscriptionManager(this, configManager);
 
         int interval = configManager.getAutosaveInterval();
         autosaveTask = new BukkitRunnable() {
