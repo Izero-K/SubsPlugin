@@ -2,6 +2,7 @@ name: RrSubs
 version: '1.0-SNAPSHOT'
 main: dev.portalgenesis.rrSubs.RrSubs
 api-version: '1.21'
+<<<<<<< HEAD
 depend: [CommandAPI]
 authors: [ Izero ]
 commands:
@@ -9,3 +10,6 @@ commands:
     description: Управление подписками (pro/deluxe)
     usage: /rrsubs <give|see|reload>
     permission: rrsubs.admin
+=======
+authors: [ Izero ]
+>>>>>>> 959433715ead53dbce4b84c9baeb307d745f6525
