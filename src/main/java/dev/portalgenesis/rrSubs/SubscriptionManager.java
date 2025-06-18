@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SubscriptionManager {
     private final File dataFile;
-    private final Map<String, SubscriptionType> subscriptions; // Используем String (ник) вместо UUID
+    private final Map<String, SubscriptionType> subscriptions;
     private final Gson gson;
     private final JavaPlugin plugin;
     private final Logger logger;
