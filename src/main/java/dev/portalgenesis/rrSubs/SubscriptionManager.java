@@ -39,7 +39,7 @@ public class SubscriptionManager {
     }
 
     public void setSubscription(String playerName, SubscriptionType type) {
-        subscriptions.put(playerName.toLowerCase(), type); // Сохраняем в нижнем регистре
+        subscriptions.put(playerName.toLowerCase(), type);
         save();
 
         Player player = Bukkit.getPlayer(playerName);
