@@ -1,5 +1,5 @@
 name: RrSubs
-version: '1.0-SNAPSHOT'
+version: ${version}
 main: dev.portalgenesis.rrSubs.RrSubs
 api-version: '1.21'
 depend: [CommandAPI]
