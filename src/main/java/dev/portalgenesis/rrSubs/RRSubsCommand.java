@@ -30,7 +30,7 @@ public class RRSubsCommand {
         registerCommands();
     }
 
-    public void sendMessage(Player to, String key, Object... args) {
+    public void sendMessage(CommandSender to, String key, Object... args) {
         to.sendMessage(configManager.getMessage(key, args));
     }
 
