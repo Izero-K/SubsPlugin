@@ -1,6 +1,5 @@
 package dev.portalgenesis.rrSubs;
 
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public enum SubscriptionType {
@@ -18,7 +17,7 @@ public enum SubscriptionType {
         return color;
     }
 
-    public Component getDisplayName() {
-        return Component.text(name()).color(getColor());
+    public String getDisplayName() {
+        return "&"+getColor().asHexString()+name();
     }
 }
