@@ -8,13 +8,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.OfflinePlayer;
-
+import java.util.stream.Collectors;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.HashMap;
 
 public class RRSubsCommand {
+
     private final SubscriptionManager subscriptionManager;
     private final ConfigManager configManager;
     private final JavaPlugin plugin;
@@ -25,22 +24,25 @@ public class RRSubsCommand {
         this.configManager = configManager;
         this.plugin = plugin;
         this.subscriptionTypeNames = Arrays.stream(SubscriptionType.values())
-                .map(SubscriptionType::getCleanName)
+                .map(Enum::name)
                 .toArray(String[]::new);
+
         registerCommands();
     }
 
     private void registerCommands() {
-        new CommandAPICommand("rrsubs")
+        new CommandAPICommand("subs")
                 .withPermission("rrsubs.admin")
-                .withAliases("rrs")
                 .withSubcommands(
                         createGiveCommand(),
                         createSeeCommand(),
-                        createReloadCommand(),
                         createListCommand(),
-                        createListPlayersCommand()
+                        createListPlayersCommand(),
+                        createReloadCommand()
                 )
+                .executes((sender, args) -> {
+                    sender.sendMessage("§eИспользуйте подкоманды: give, see, list, listplayers, reload");
+                })
                 .register();
     }
 
@@ -53,21 +55,18 @@ public class RRSubsCommand {
                     Player target = (Player) args.get("player");
                     String inputType = (String) args.get("type");
 
-                    // Находим соответствующий enum по чистому имени
-                    SubscriptionType type = Arrays.stream(SubscriptionType.values())
-                            .filter(st -> st.getCleanName().equalsIgnoreCase(inputType))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (type == null) {
+                    SubscriptionType type;
+                    try {
+                        type = SubscriptionType.valueOf(inputType.toUpperCase());
+                    } catch (IllegalArgumentException e) {
                         sendError(sender, "Неверный тип подписки. Доступные: " +
                                 String.join(", ", subscriptionTypeNames));
                         return;
                     }
 
                     subscriptionManager.setSubscription(target.getName(), type);
-                    sendSuccess(sender, "Подписка '" + type.getDisplayName() +
-                            "' выдана игроку " + target.getName());
+                    sendSuccess(sender, "§aВыдана подписка '" + type.getDisplayName() +
+                            "§a' игроку " + target.getName());
                 });
     }
 
@@ -77,36 +76,46 @@ public class RRSubsCommand {
                 .executes((sender, args) -> {
                     Player target = (Player) args.get("player");
                     SubscriptionType type = subscriptionManager.getSubscription(target.getName());
-                    sendInfo(sender, "§6Игрок §e" + target.getName() + "§6 имеет подписку: " +
-                            type.getDisplayName());
+                    sendInfo(sender, "§aУ игрока §e" + target.getName() + "§a подписка: " + type.getDisplayName());
                 });
     }
 
+    private CommandAPICommand createListCommand() {
+        return new CommandAPICommand("list")
+                .executes((sender, args) -> {
+                    String types = Arrays.stream(SubscriptionType.values())
+                            .map(SubscriptionType::getDisplayName)
+                            .map(name -> name + "§f") // Сброс цвета после каждого
+                            .collect(Collectors.joining("§f, §e"));
+                    sendInfo(sender, "§aДоступные типы подписок: §e" + types);
+                });
+    }
+
+
     private CommandAPICommand createListPlayersCommand() {
         return new CommandAPICommand("listplayers")
-                .withAliases("lp", "players")
                 .executes((sender, args) -> {
-                    Map<String, SubscriptionType> subscriptions = subscriptionManager.getAllSubscriptions();
-
-                    if (subscriptions == null || subscriptions.isEmpty()) {
+                    Map<String, SubscriptionType> all = subscriptionManager.getAllSubscriptions();
+                    if (all == null || all.isEmpty()) {
                         sendInfo(sender, "§eНет игроков с активными подписками");
                         return;
                     }
 
                     StringBuilder message = new StringBuilder();
-                    message.append("§6╔══════════════§f[ §bСписок подписок §f]§6══════════════╗\n");
+                    message.append("§6╔═══════§f[ §bСписок подписок §f]§6═══════╗\n");
 
-                    subscriptions.forEach((name, type) -> {
+                    all.forEach((name, type) -> {
                         boolean isOnline = Bukkit.getPlayer(name) != null;
-                        String status = isOnline ? "§a● Онлайн" : "§7● Оффлайн";
-                        message.append(String.format("§6│ §e%-16s §8%s §f│ §b%-12s §6│\n",
-                                name,
-                                status,
-                                type.getDisplayName()));
+                        String status = isOnline ? "§a●" : "§7●";
+                        String shortName = name.length() > 12 ? name.substring(0, 12) + "…" : name;
+                        message.append(String.format("§6│ §e%-13s §8%s §6│ %s%-9s§r §6│\n",
+                                shortName, status, type.getDisplayName(), ""));
                     });
 
-                    message.append("§6╚══════════════════════════════════════════════╝");
+                    message.append("§6╚═════════════════════════╝");
                     sender.sendMessage(message.toString());
+
+
                 });
     }
 
@@ -116,28 +125,20 @@ public class RRSubsCommand {
                 .executes((sender, args) -> {
                     plugin.reloadConfig();
                     configManager.reload();
-                    sendSuccess(sender, "§aКонфигурация успешно перезагружена!");
-                    plugin.getLogger().info("Конфигурация перезагружена администратором " + sender.getName());
+                    sendSuccess(sender, "Конфигурация перезагружена!");
+                    plugin.getLogger().info("Конфигурация перезагружена " + sender.getName());
                 });
     }
 
-    private CommandAPICommand createListCommand() {
-        return new CommandAPICommand("list")
-                .executes((sender, args) -> {
-                    String formattedTypes = String.join("§f, §e", subscriptionTypeNames);
-                    sendInfo(sender, "§6Доступные типы подписок: §e" + formattedTypes + "§f");
-                });
+    private void sendSuccess(CommandSender sender, String msg) {
+        sender.sendMessage("§a" + msg);
     }
 
-    private void sendSuccess(CommandSender sender, String message) {
-        sender.sendMessage("§a" + message);
+    private void sendError(CommandSender sender, String msg) {
+        sender.sendMessage("§c" + msg);
     }
 
-    private void sendError(CommandSender sender, String message) {
-        sender.sendMessage("§c" + message);
-    }
-
-    private void sendInfo(CommandSender sender, String message) {
-        sender.sendMessage("§e" + message);
+    private void sendInfo(CommandSender sender, String msg) {
+        sender.sendMessage("§e" + msg);
     }
 }
