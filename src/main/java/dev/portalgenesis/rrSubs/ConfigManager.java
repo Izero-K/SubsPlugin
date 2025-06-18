@@ -16,7 +16,7 @@ public class ConfigManager {
     }
 
     public int getAutosaveInterval() {
-        return config.getInt("autosave_interval", 20); // по умолчанию 20 секунд
+        return config.getInt("autosave_interval", 20);
     }
 
     private static final LegacyComponentSerializer MESSAGE_PARSER = LegacyComponentSerializer.builder()
