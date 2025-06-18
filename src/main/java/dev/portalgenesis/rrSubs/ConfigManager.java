@@ -27,7 +27,7 @@ public class ConfigManager {
 
 
     public Component getMessage(String key, Object... args) {
-        var raw = config.getString(key, key);
+        var raw = config.getString("messages."+key, key);
         int i = 0;
         for (var arg : args) {
             raw = raw.replace("%"+i, String.valueOf(arg));
