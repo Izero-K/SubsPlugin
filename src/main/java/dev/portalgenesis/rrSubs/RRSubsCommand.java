@@ -60,14 +60,13 @@ public class RRSubsCommand {
                     try {
                         type = SubscriptionType.valueOf(inputType.toUpperCase());
                     } catch (IllegalArgumentException e) {
-                        sendError(sender, "Неверный тип подписки. Доступные: " +
-                                String.join(", ", subscriptionTypeNames));
+                        sendMessage(sender, "unknown_subscription", String.join(", ", subscriptionTypeNames));
                         return;
                     }
 
                     subscriptionManager.setSubscription(target.getName(), type);
-                    sendSuccess(sender, "§aВыдана подписка '" + type.getDisplayName() +
-                            "§a' игроку " + target.getName());
+                    sendMessage(sender, "subscription_set",  type.getDisplayName(), target.getName());
+
                 });
     }
 
@@ -77,7 +76,7 @@ public class RRSubsCommand {
                 .executes((sender, args) -> {
                     Player target = (Player) args.get("player");
                     SubscriptionType type = subscriptionManager.getSubscription(target.getName());
-                    sendInfo(sender, "§aУ игрока §e" + target.getName() + "§a подписка: " + type.getDisplayName());
+                    sendMessage(sender, "subscription_info", target.getName(), type.getDisplayName());
                 });
     }
 
@@ -85,9 +84,10 @@ public class RRSubsCommand {
         return new CommandAPICommand("list")
                 .executes((sender, args) -> {
                     String types = Arrays.stream(SubscriptionType.values())
+                            .filter(subscriptionType -> subscriptionType != SubscriptionType.NONE)
                             .map(SubscriptionType::name)
                             .collect(Collectors.joining("§f, §e"));
-                    sendInfo(sender, "§aДоступные типы подписок: §e" + types);
+                    sendMessage(sender, "list_subscription", types);
                 });
     }
 
@@ -97,7 +97,7 @@ public class RRSubsCommand {
                 .executes((sender, args) -> {
                     Map<String, SubscriptionType> all = subscriptionManager.getAllSubscriptions();
                     if (all == null || all.isEmpty()) {
-                        sendInfo(sender, "§eНет игроков с активными подписками");
+                        sendMessage(sender, "not_have_active_subscription");
                         return;
                     }
 
@@ -125,20 +125,8 @@ public class RRSubsCommand {
                 .executes((sender, args) -> {
                     plugin.reloadConfig();
                     configManager.reload();
-                    sendSuccess(sender, "Конфигурация перезагружена!");
-                    plugin.getLogger().info("Конфигурация перезагружена " + sender.getName());
+                    sendMessage(sender, "configuration_reloaded");
+                    plugin.getLogger().info("Configuration reloaded");
                 });
-    }
-
-    private void sendSuccess(CommandSender sender, String msg) {
-        sender.sendMessage("§a" + msg);
-    }
-
-    private void sendError(CommandSender sender, String msg) {
-        sender.sendMessage("§c" + msg);
-    }
-
-    private void sendInfo(CommandSender sender, String msg) {
-        sender.sendMessage("§e" + msg);
     }
 }

@@ -5,5 +5,9 @@ autosave_interval: 20
 
 # Сообщения, которые плагин показывает игрокам/админам
 messages:
-  subscription_set: "§aИгроку %player% выдана подписка %subscription%"
-  subscription_info: "§bУ игрока %player% подписка: %subscription%"
+  subscription_set: "&aИгроку %0 выдана подписка %1"
+  subscription_info: "&bУ игрока %0 подписка: %1"
+  unknown_subscription: "&cНеверный тип подписки. Доступные: %0"
+  list_subscription: "&aДоступные типы подписок: &e%0"
+  not_have_active_subscription: "&eНет игроков с активными подписками"
+  configuration_reloaded: "&aКонфигурация перезагружена!"
