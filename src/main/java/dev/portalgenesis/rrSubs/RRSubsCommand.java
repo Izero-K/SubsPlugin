@@ -68,7 +68,7 @@ public class RRSubsCommand {
                     sendMessage(sender, "subscription_set",  type.getDisplayName(), target.getName());
 
                 });
-    }
+    }//a
 
     private CommandAPICommand createSeeCommand() {
         return new CommandAPICommand("see")
