@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -17,15 +18,19 @@ public class SubscriptionManager {
     private final Map<String, SubscriptionType> subscriptions; // Используем String (ник) вместо UUID
     private final Gson gson;
     private final JavaPlugin plugin;
+    private final Logger logger;
 
     public SubscriptionManager(JavaPlugin plugin) {
         this.plugin = plugin;
+        this.logger = plugin.getSLF4JLogger();
         this.dataFile = new File(plugin.getDataFolder(), "subscriptions.json");
         this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.subscriptions = new ConcurrentHashMap<>();
 
         if (!plugin.getDataFolder().exists()) {
-            plugin.getDataFolder().mkdirs();
+            if (!plugin.getDataFolder().mkdirs()) {
+                logger.error("Failed to mkdir plugin data folder");
+            }
         }
 
         load();
@@ -70,7 +75,7 @@ public class SubscriptionManager {
      * Получает все подписки (ник → тип)
      */
     public Map<String, SubscriptionType> getAllSubscriptions() {
-        return Collections.unmodifiableMap(new HashMap<>(subscriptions));
+        return Map.copyOf(subscriptions);
     }
 
     // Сохранение и загрузка (аналогично, но для Map<String, SubscriptionType>)

@@ -1,22 +1,24 @@
 package dev.portalgenesis.rrSubs;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+
 public enum SubscriptionType {
-    NONE("§6Хомяк"),
-    PRO("§6Про"),
-    DELUXE("§bДелюкс");
+    NONE(NamedTextColor.WHITE),
+    PRO(NamedTextColor.AQUA),
+    DELUXE(NamedTextColor.GOLD);
 
-    private final String displayName;
+    private final NamedTextColor color;
 
-    SubscriptionType(String displayName) {
-        this.displayName = displayName;
+    SubscriptionType(NamedTextColor color) {
+        this.color = color;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public NamedTextColor getColor() {
+        return color;
     }
 
-    // Новый метод - возвращает имя без цветовых кодов
-    public String getCleanName() {
-        return displayName.replaceAll("§[0-9a-f]", "");
+    public Component getDisplayName() {
+        return Component.text(name()).color(getColor());
     }
 }

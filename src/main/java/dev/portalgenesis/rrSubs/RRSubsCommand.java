@@ -40,9 +40,6 @@ public class RRSubsCommand {
                         createListPlayersCommand(),
                         createReloadCommand()
                 )
-                .executes((sender, args) -> {
-                    sender.sendMessage("§eИспользуйте подкоманды: give, see, list, listplayers, reload");
-                })
                 .register();
     }
 
@@ -84,8 +81,7 @@ public class RRSubsCommand {
         return new CommandAPICommand("list")
                 .executes((sender, args) -> {
                     String types = Arrays.stream(SubscriptionType.values())
-                            .map(SubscriptionType::getDisplayName)
-                            .map(name -> name + "§f") // Сброс цвета после каждого
+                            .map(SubscriptionType::name)
                             .collect(Collectors.joining("§f, §e"));
                     sendInfo(sender, "§aДоступные типы подписок: §e" + types);
                 });
@@ -109,7 +105,7 @@ public class RRSubsCommand {
                         String status = isOnline ? "§a●" : "§7●";
                         String shortName = name.length() > 12 ? name.substring(0, 12) + "…" : name;
                         message.append(String.format("§6│ §e%-13s §8%s §6│ %s%-9s§r §6│\n",
-                                shortName, status, type.getDisplayName(), ""));
+                                shortName, status, type.getColor(), ""));
                     });
 
                     message.append("§6╚═════════════════════════╝");

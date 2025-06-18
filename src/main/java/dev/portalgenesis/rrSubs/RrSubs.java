@@ -1,7 +1,5 @@
 package dev.portalgenesis.rrSubs;
 
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -10,9 +8,6 @@ public class RrSubs extends JavaPlugin {
     private SubscriptionManager subscriptionManager;
     private ConfigManager configManager;
     private BukkitRunnable autosaveTask;
-
-
-
 
     @Override
     public void onEnable() {
@@ -29,11 +24,7 @@ public class RrSubs extends JavaPlugin {
         };
 
         autosaveTask.runTaskTimerAsynchronously(this, interval * 20L, interval * 20L);
-
-        CommandAPI.onEnable();
         new RRSubsCommand(subscriptionManager, configManager, this); // регистрация команд
-
-
     }
 
     @Override
@@ -41,9 +32,6 @@ public class RrSubs extends JavaPlugin {
         if (autosaveTask != null) autosaveTask.cancel();
         subscriptionManager.save();
     }
-
-
-// CommandAPI
 
     public SubscriptionManager getSubscriptionManager() {
         return subscriptionManager;
