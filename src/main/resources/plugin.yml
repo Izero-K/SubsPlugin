@@ -1,0 +1,11 @@
+name: RrSubs
+version: '1.0-SNAPSHOT'
+main: dev.portalgenesis.rrSubs.RrSubs
+api-version: '1.21'
+depend: [CommandAPI]
+authors: [ Izero ]
+commands:
+  rrsubs:
+    description: Управление подписками (pro/deluxe)
+    usage: /rrsubs <give|see|reload>
+    permission: rrsubs.admin

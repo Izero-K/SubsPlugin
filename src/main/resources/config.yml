@@ -1,0 +1,9 @@
+# config.yml
+
+# Интервал автосохранения в секундах
+autosave_interval: 20
+
+# Сообщения, которые плагин показывает игрокам/админам
+messages:
+  subscription_set: "§aИгроку %player% выдана подписка %subscription%"
+  subscription_info: "§bУ игрока %player% подписка: %subscription%"
