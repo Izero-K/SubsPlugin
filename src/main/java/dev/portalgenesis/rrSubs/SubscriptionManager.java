@@ -19,9 +19,11 @@ public class SubscriptionManager {
     private final Gson gson;
     private final JavaPlugin plugin;
     private final Logger logger;
+    private final ConfigManager cfg;
 
-    public SubscriptionManager(JavaPlugin plugin) {
+    public SubscriptionManager(JavaPlugin plugin, ConfigManager configManager) {
         this.plugin = plugin;
+        this.cfg = configManager;
         this.logger = plugin.getSLF4JLogger();
         this.dataFile = new File(plugin.getDataFolder(), "subscriptions.json");
         this.gson = new GsonBuilder().setPrettyPrinting().create();

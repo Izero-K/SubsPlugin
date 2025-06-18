@@ -30,6 +30,10 @@ public class RRSubsCommand {
         registerCommands();
     }
 
+    public void sendMessage(Player to, String key, Object... args) {
+        to.sendMessage(configManager.getMessage(key, args));
+    }
+
     private void registerCommands() {
         new CommandAPICommand("subs")
                 .withPermission("rrsubs.admin")
